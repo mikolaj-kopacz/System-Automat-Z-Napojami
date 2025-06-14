@@ -1,0 +1,1378 @@
+----InwentarzFrame.java----
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class InwentarzFrame extends JFrame {
+    private JPanel rootPanel;
+    private JTable table1;
+    private JButton dodajButton;
+    private JButton usunButton;
+    private JButton edytujButton;
+    private JButton powrotButton;
+
+    public InwentarzFrame() {
+        super("Inwentarz");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setContentPane(rootPanel);
+        setSize(600, 600);
+        setLocationRelativeTo(null);
+
+        DefaultTableModel model = new DefaultTableModel(new Object[]{"ID", "Nazwa", "Cena", "Typ", "Ilość", "Rozmiar (ml)"}, 0);
+        table1.setModel(model);
+
+        List<Object[]> produkty = pobierzProduktyZBazy();
+        for (int i = 0; i < produkty.size(); i++) {
+            model.addRow(produkty.get(i));
+        }
+
+        usunButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = table1.getSelectedRow();
+                if (selectedRow != -1) {
+                    int id = (int) model.getValueAt(selectedRow, 0);
+                    if (usunProduktZBazy(id)) {
+                        model.removeRow(selectedRow);
+                        JOptionPane.showMessageDialog(null, "Produkt usunięty");
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Błąd przy usuwaniu produktu");
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Wybierz produkt do usunięcia");
+                }
+            }
+        });
+
+        edytujButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = table1.getSelectedRow();
+                if (selectedRow != -1) {
+                    int id = (int) model.getValueAt(selectedRow, 0);
+                    String nazwa = (String) model.getValueAt(selectedRow, 1);
+                    double cena = Double.parseDouble((String) model.getValueAt(selectedRow, 2));
+                    String typ = (String) model.getValueAt(selectedRow, 3);
+                    int ilosc = (int) model.getValueAt(selectedRow, 4);
+
+                    dispose();
+                    EdytujFrame edytujFrame = new EdytujFrame(id, nazwa, typ, cena, ilosc);
+                    edytujFrame.setVisible(true);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Wybierz produkt do edycji");
+                }
+            }
+        });
+
+        dodajButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                DodajFrame dodajFrame = new DodajFrame();
+                dodajFrame.setVisible(true);
+            }
+        });
+
+        powrotButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                AdminFrame adminFrame = new AdminFrame();
+                adminFrame.setVisible(true);
+            }
+        });
+    }
+
+    private boolean usunProduktZBazy(int id) {
+        String dbUrl = "jdbc:sqlite:automat.db";
+        String sql = "DELETE FROM produkty WHERE id = ?";
+
+        try {
+            Connection conn = DriverManager.getConnection(dbUrl);
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, id);
+            int affectedRows = pstmt.executeUpdate();
+            pstmt.close();
+            conn.close();
+            return affectedRows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Błąd podczas usuwania z bazy");
+            return false;
+        }
+    }
+
+    private List<Object[]> pobierzProduktyZBazy() {
+        List<Object[]> produkty = new ArrayList<Object[]>();
+        String dbUrl = "jdbc:sqlite:automat.db";
+
+        String sql = "SELECT p.id, p.nazwa, p.cena, p.typ_produktu, p.ilosc, dn.pojemnosc_ml " +
+                "FROM produkty p " +
+                "LEFT JOIN detale_napoje dn ON p.id = dn.id_produktu";
+
+        try {
+            Connection conn = DriverManager.getConnection(dbUrl);
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String nazwa = rs.getString("nazwa");
+                String cena = String.valueOf(rs.getDouble("cena"));
+                String typProduktu = rs.getString("typ_produktu");
+                int ilosc = rs.getInt("ilosc");
+                int pojemnoscMl = rs.getInt("pojemnosc_ml");
+
+                Object[] wiersz = new Object[]{id, nazwa, cena, typProduktu, ilosc, pojemnoscMl};
+                produkty.add(wiersz);
+            }
+
+            rs.close();
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Błąd podczas ładowania danych z bazy");
+        }
+        return produkty;
+    }
+
+    public static void main(String[] args) {
+        InwentarzFrame frame = new InwentarzFrame();
+        frame.setVisible(true);
+    }
+}
+
+----KoszykFrame.java----
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
+
+public class KoszykFrame extends JFrame {
+    private JPanel rootPanel;
+    private JLabel koszykLabel;
+    private JButton usunButton;
+    private JButton powrotButton;
+    private JTable table1;
+    private MainFrame mainFrame;
+
+    public KoszykFrame(List<Produkt> koszyk, MainFrame mainFrame) {
+        super("Koszyk");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setContentPane(rootPanel);
+        setSize(400,400);
+        setLocationRelativeTo(null);
+        this.mainFrame = mainFrame;
+
+        String[] columnNames = {"Nazwa", "Cena"};
+        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
+
+        for (int i = 0; i < koszyk.size(); i++) {
+            Produkt produkt = koszyk.get(i);
+            Object[] row = {produkt.getNazwa(), produkt.getCena() + " zł"};
+            tableModel.addRow(row);
+        }
+
+        table1.setModel(tableModel);
+
+        JScrollPane scrollPane = new JScrollPane(table1);
+        rootPanel.setLayout(new BorderLayout());
+        rootPanel.add(scrollPane, BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+        buttonPanel.add(usunButton);
+        buttonPanel.add(powrotButton);
+
+        rootPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        powrotButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                mainFrame.setVisible(true);
+            }
+        });
+
+        usunButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = table1.getSelectedRow();
+                if (selectedRow != -1) {
+                    koszyk.remove(selectedRow);
+                    tableModel.removeRow(selectedRow);
+                    mainFrame.aktualizujEtykiety();
+                }
+            }
+        });
+    }
+}
+
+----ZaplacFrame.java----
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.time.LocalDateTime;
+import java.util.List;
+
+public class ZaplacFrame extends JFrame {
+    private JPanel rootPanel;
+    private JPanel panelDolny;
+    private JButton anulujButton;
+    private JPanel panelGlowny;
+    private JPanel kwotaDoZaplatyPanel;
+    private JLabel kwotaDoZaplatyLabel;
+    private JLabel kwotaLabel;
+    private JButton zaplacKartaButton;
+    private JButton wrzucMonetyButton;
+
+    private MainFrame mainFrame;
+    private double kwotaDoZaplaty;
+    private double wplaconaKwota;
+
+    public ZaplacFrame(MainFrame mainFrame, double kwota) {
+        super("Płatność");
+        this.mainFrame = mainFrame;
+        this.kwotaDoZaplaty = kwota;
+        this.wplaconaKwota = 0;
+
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setContentPane(rootPanel);
+        setSize(400, 300);
+        setLocationRelativeTo(null);
+        setResizable(false);
+
+        kwotaLabel.setText(kwotaDoZaplaty + " zł");
+        kwotaLabel.setFont(new Font("Arial", Font.BOLD, 28));
+
+        anulujButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                mainFrame.setVisible(true);
+            }
+        });
+
+        zaplacKartaButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                wplaconaKwota = kwotaDoZaplaty;
+                symulujPlatnosc("Karta");
+            }
+        });
+
+        wrzucMonetyButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String wpisanaMoneta = JOptionPane.showInputDialog("Wprowadź kwotę wrzucanej monety:");
+
+                if (wpisanaMoneta == null || wpisanaMoneta.equals("")) {
+                    return;
+                }
+
+                try {
+                    double moneta = Double.parseDouble(wpisanaMoneta);
+                    wplaconaKwota = wplaconaKwota + moneta;
+
+                    JOptionPane.showMessageDialog(null, "Wpłacono dotychczas: " + wplaconaKwota + " zł");
+
+                    if (wplaconaKwota >= kwotaDoZaplaty) {
+                        symulujPlatnosc("Gotówka");
+                    }
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(null, "Wprowadzono niepoprawną kwotę!");
+                }
+            }
+        });
+    }
+
+    private void symulujPlatnosc(String metodaPlatnosci) {
+        zaplacKartaButton.setEnabled(false);
+        wrzucMonetyButton.setEnabled(false);
+        anulujButton.setEnabled(false);
+
+        int czasOczekiwania = 2000;
+        if (metodaPlatnosci.equals("Gotówka")) {
+            czasOczekiwania = 500;
+        }
+
+        Timer timer = new Timer(czasOczekiwania, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                double reszta = wplaconaKwota - kwotaDoZaplaty;
+                if (metodaPlatnosci.equals("Gotówka") && reszta > 0) {
+                    JOptionPane.showMessageDialog(null, "Twoja reszta: " + reszta + " zł");
+                }
+
+                List<Produkt> zakupioneProdukty = mainFrame.getKoszyk();
+                Transakcja nowaTransakcja = new Transakcja(LocalDateTime.now(), zakupioneProdukty, kwotaDoZaplaty, metodaPlatnosci);
+                HistoriaTransakcji.zapiszTransakcje(nowaTransakcja);
+
+                mainFrame.finalizujTransakcje();
+                dispose();
+                mainFrame.setVisible(true);
+            }
+        });
+        timer.setRepeats(false);
+        timer.start();
+    }
+}
+
+----Transakcja.java----
+import java.time.LocalDateTime;
+import java.util.List;
+
+public class Transakcja {
+    private LocalDateTime dataCzas;
+    private List<Produkt> produkty;
+    private double kwotaCalkowita;
+    private String metodaPlatnosci;
+
+    public Transakcja(LocalDateTime dataCzas, List<Produkt> produkty, double kwotaCalkowita, String metodaPlatnosci) {
+        this.dataCzas = dataCzas;
+        this.produkty = produkty;
+        this.kwotaCalkowita = kwotaCalkowita;
+        this.metodaPlatnosci = metodaPlatnosci;
+    }
+
+    public LocalDateTime getDataCzas() {
+        return dataCzas;
+    }
+
+    public List<Produkt> getProdukty() {
+        return produkty;
+    }
+
+    public double getKwotaCalkowita() {
+        return kwotaCalkowita;
+    }
+
+    public String getMetodaPlatnosci() {
+        return metodaPlatnosci;
+    }
+}
+
+----TransakcjeFrame.java----
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
+
+public class TransakcjeFrame extends JFrame {
+    private JPanel rootPanel;
+    private JButton powrotButton;
+    private JLabel historiaTransakcjiLabel;
+    private JTable table1;
+
+    public TransakcjeFrame() {
+        super("Historia Transakcji");
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setContentPane(rootPanel);
+        setSize(600, 400);
+        setLocationRelativeTo(null);
+
+        wypelnijTabeleTransakcji();
+
+        powrotButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                AdminFrame adminFrame = new AdminFrame();
+                adminFrame.setVisible(true);
+            }
+        });
+    }
+
+    private void wypelnijTabeleTransakcji() {
+        String[] nazwyKolumn = {"Data/Czas", "Produkty", "Kwota", "Metoda Płatności"};
+
+        DefaultTableModel modelTabeli = new DefaultTableModel(nazwyKolumn, 0);
+
+        List<String[]> daneZPliku = HistoriaTransakcji.wczytajTransakcjeDlaTabeli();
+
+        for (int i = 0; i < daneZPliku.size(); i++) {
+            modelTabeli.addRow(daneZPliku.get(i));
+        }
+
+        table1.setModel(modelTabeli);
+        table1.setFillsViewportHeight(true);
+    }
+}
+
+----Napoj.java----
+public abstract class Napoj extends Produkt {
+    protected int pojemnoscMl;
+
+    public Napoj(int id, String nazwa, double cena, int ilosc, int pojemnoscMl) {
+        super(id, nazwa, cena, ilosc);
+        this.pojemnoscMl = pojemnoscMl;
+    }
+
+    public int getPojemnoscMl() {
+        return pojemnoscMl;
+    }
+}
+
+----DodajFrame.java----
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+public class DodajFrame extends JFrame {
+    private JPanel rootPanel;
+    private JButton dodajButton;
+    private JButton anulujButton;
+    private JTextField nazwaField;
+    private JTextField cenaField;
+    private JTextField iloscField;
+    private JTextField rozmiarField;
+    private JComboBox<String> comboBox1;
+
+    public DodajFrame() {
+        super("Dodaj Nowy Produkt");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setContentPane(rootPanel);
+        setLocationRelativeTo(null);
+        setSize(400, 300);
+
+        anulujButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                InwentarzFrame inwentarzFrame = new InwentarzFrame();
+                inwentarzFrame.setVisible(true);
+            }
+        });
+
+        dodajButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String nazwa = nazwaField.getText();
+                double cena = Double.parseDouble(cenaField.getText());
+                String typ = (String) comboBox1.getSelectedItem();
+                int ilosc = Integer.parseInt(iloscField.getText());
+                int rozmiar = Integer.parseInt(rozmiarField.getText());
+
+                boolean success = dodajProduktDoBazy(nazwa, cena, typ, ilosc, rozmiar);
+                if (success) {
+                    JOptionPane.showMessageDialog(null, "Produkt został dodany");
+                    dispose();
+                    InwentarzFrame inwentarzFrame = new InwentarzFrame();
+                    inwentarzFrame.setVisible(true);
+                }
+            }
+        });
+    }
+
+    private boolean czyProduktIstnieje(String nazwa, double cena, int rozmiar) {
+        String dbUrl = "jdbc:sqlite:automat.db";
+        String sql = "SELECT COUNT(*) FROM produkty p " +
+                "JOIN detale_napoje dn ON p.id = dn.id_produktu " +
+                "WHERE p.nazwa = ? AND p.cena = ? AND dn.pojemnosc_ml = ?";
+
+        try {
+            Connection conn = DriverManager.getConnection(dbUrl);
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+
+            pstmt.setString(1, nazwa);
+            pstmt.setDouble(2, cena);
+            pstmt.setInt(3, rozmiar);
+
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next() && rs.getInt(1) > 0) {
+                JOptionPane.showMessageDialog(this, "Produkt już istnieje w bazie danych");
+                rs.close();
+                pstmt.close();
+                conn.close();
+                return true;
+            }
+            rs.close();
+            pstmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private boolean dodajProduktDoBazy(String nazwa, double cena, String typ, int ilosc, int rozmiar) {
+        if (czyProduktIstnieje(nazwa, cena, rozmiar)) {
+            return false;
+        }
+
+        String dbUrl = "jdbc:sqlite:automat.db";
+        String sqlProdukty = "INSERT INTO produkty (nazwa, cena, typ_produktu, ilosc) VALUES (?, ?, ?, ?)";
+        String sqlDetaleNapoje = "INSERT INTO detale_napoje (id_produktu, pojemnosc_ml) VALUES (last_insert_rowid(), ?)";
+
+        try {
+            Connection conn = DriverManager.getConnection(dbUrl);
+            conn.setAutoCommit(false);
+
+            PreparedStatement pstmtProdukty = conn.prepareStatement(sqlProdukty);
+            PreparedStatement pstmtDetale = conn.prepareStatement(sqlDetaleNapoje);
+
+            pstmtProdukty.setString(1, nazwa);
+            pstmtProdukty.setDouble(2, cena);
+            pstmtProdukty.setString(3, typ);
+            pstmtProdukty.setInt(4, ilosc);
+            pstmtProdukty.executeUpdate();
+
+            pstmtDetale.setInt(1, rozmiar);
+            pstmtDetale.executeUpdate();
+
+            conn.commit();
+
+            pstmtProdukty.close();
+            pstmtDetale.close();
+            conn.close();
+
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static void main(String[] args) {
+        DodajFrame frame = new DodajFrame();
+        frame.setVisible(true);
+    }
+}
+
+----KalkulatorFinansow.java----
+import java.io.*;
+
+public class KalkulatorFinansow {
+
+    private static final String PLIK_TRANSAKCJE = "transakcje.csv";
+    private static final String PLIK_WYPLATY = "historia_wyplat.txt";
+
+    public static double pobierzZyskCalkowity() {
+        double suma = 0.0;
+        File plik = new File(PLIK_TRANSAKCJE);
+
+        if (!plik.exists()) {
+            System.err.println("Plik transakcje.csv nie został znaleziony!");
+            return 0.0;
+        }
+
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(plik));
+            String linia;
+
+            while ((linia = reader.readLine()) != null) {
+                String[] pola = linia.split(";");
+
+                if (pola.length >= 3) {
+                    try {
+                        String kwotaStr = pola[2];
+                        suma = suma + Double.parseDouble(kwotaStr.trim());
+                    } catch (NumberFormatException e) {
+                        System.out.println("Pominięto linię: " + linia);
+                    }
+                }
+            }
+            reader.close();
+        } catch (IOException e) {
+            System.err.println("Błąd podczas odczytu pliku transakcji: " + e.getMessage());
+            return 0.0;
+        }
+        return suma;
+    }
+
+    private static double pobierzSumeWyplacona() {
+        File plik = new File(PLIK_WYPLATY);
+        if (!plik.exists()) {
+            return 0.0;
+        }
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(plik));
+            String linia = reader.readLine();
+            reader.close();
+
+            if (linia != null && !linia.trim().isEmpty()) {
+                return Double.parseDouble(linia.trim());
+            }
+        } catch (IOException e) {
+            System.err.println("Błąd podczas odczytu historii wypłat: " + e.getMessage());
+        } catch (NumberFormatException e) {
+            System.err.println("Błąd formatu liczby w historii wypłat");
+        }
+        return 0.0;
+    }
+
+    public static double pobierzZyskDoWyplaty() {
+        double zyskCalkowity = pobierzZyskCalkowity();
+        double sumaWyplacona = pobierzSumeWyplacona();
+        return zyskCalkowity - sumaWyplacona;
+    }
+
+    public static void zapiszWyplate(double kwotaWyplacana) {
+        double juzWyplacono = pobierzSumeWyplacona();
+        double nowaSumaWyplat = juzWyplacono + kwotaWyplacana;
+
+        try {
+            PrintWriter writer = new PrintWriter(new FileWriter(PLIK_WYPLATY));
+            writer.print(nowaSumaWyplat);
+            writer.close();
+        } catch (IOException e) {
+            System.err.println("Błąd zapisu do historii wypłat: " + e.getMessage());
+        }
+    }
+}
+
+----NapojGazowany.java----
+public class NapojGazowany extends Napoj {
+    private boolean czySlodzony;
+
+    public NapojGazowany(int id, String nazwa, double cena, int ilosc, int pojemnoscMl, boolean czySlodzony) {
+        super(id, nazwa, cena, ilosc, pojemnoscMl);
+        this.czySlodzony = czySlodzony;
+    }
+
+    public String getSzczegolowyOpis() {
+        String cukierInfo = "bez cukru";
+        if (czySlodzony) {
+            cukierInfo = "słodzony cukrem";
+        }
+
+        return "Napój gazowany: " + nazwa + "\n" +
+                "Pojemność: " + pojemnoscMl + " ml\n" +
+                "Ilość na stanie: " + ilosc + "\n" +
+                "Cena: " + cena + " zł\n" +
+                "(" + cukierInfo + ")";
+    }
+}
+
+----Woda.java----
+public class Woda extends Napoj {
+
+    public Woda(int id, String nazwa, double cena, int ilosc, int pojemnoscMl) {
+        super(id, nazwa, cena, ilosc, pojemnoscMl);
+    }
+
+    public String getSzczegolowyOpis() {
+        return "Woda: " + nazwa + "\n" +
+                "Pojemność: " + pojemnoscMl + " ml\n" +
+                "Ilość na stanie: " + ilosc + "\n" +
+                "Cena: " + cena + " zł";
+    }
+}
+
+----HistoriaTransakcji.java----
+import java.io.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+public class HistoriaTransakcji {
+    private static final String NAZWA_PLIKU = "transakcje.csv";
+
+    public static void zapiszTransakcje(Transakcja transakcja) {
+        try {
+            FileWriter fw = new FileWriter(NAZWA_PLIKU, true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            PrintWriter out = new PrintWriter(bw);
+
+            String produktyStr = "";
+            List<Produkt> produkty = transakcja.getProdukty();
+            for (int i = 0; i < produkty.size(); i++) {
+                produktyStr = produktyStr + produkty.get(i).getNazwa();
+                if (i < produkty.size() - 1) {
+                    produktyStr = produktyStr + ",";
+                }
+            }
+
+            String linia = transakcja.getDataCzas().toString() + ";" +
+                    produktyStr + ";" +
+                    transakcja.getKwotaCalkowita() + ";" +
+                    transakcja.getMetodaPlatnosci();
+
+            out.println(linia);
+            out.close();
+            bw.close();
+            fw.close();
+
+        } catch (IOException e) {
+            System.err.println("Błąd podczas zapisu do pliku transakcji: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public static List<String[]> wczytajTransakcjeDlaTabeli() {
+        List<String[]> dane = new ArrayList<String[]>();
+        File plik = new File(NAZWA_PLIKU);
+        if (!plik.exists()) {
+            return dane;
+        }
+
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(NAZWA_PLIKU));
+            String linia;
+            while ((linia = br.readLine()) != null) {
+                String[] pola = linia.split(";");
+                dane.add(pola);
+            }
+            br.close();
+        } catch (IOException e) {
+            System.err.println("Błąd podczas odczytu pliku transakcji: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return dane;
+    }
+}
+
+----Sok.java----
+public class Sok extends Napoj {
+    private String rodzajOwocu;
+
+    public Sok(int id, String nazwa, double cena, int ilosc, int pojemnoscMl, String rodzajOwocu) {
+        super(id, nazwa, cena, ilosc, pojemnoscMl);
+        this.rodzajOwocu = rodzajOwocu;
+    }
+
+    public String getSzczegolowyOpis() {
+        return "Sok owocowy: " + nazwa + "\n" +
+                "Smak: " + rodzajOwocu + "\n" +
+                "Pojemność: " + pojemnoscMl + " ml\n" +
+                "Ilość na stanie: " + ilosc + "\n" +
+                "Cena: " + cena + " zł";
+    }
+}
+
+----AdminFrame.java----
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class AdminFrame extends JFrame {
+    private JPanel rootPanel;
+    private JPanel adminPanel;
+    private JButton powrotButton;
+    private JButton wylaczButton;
+    private JButton transakcjeButton;
+    private JButton inwentarzButton;
+    private JButton finanseButton;
+    private JLabel finanseLabel;
+    private JLabel inwentarzLabel;
+    private JLabel wylaczLabel;
+    private JLabel transakcjeLabel;
+
+    public AdminFrame() {
+        super("Admin Panel");
+        setContentPane(rootPanel);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(400, 300);
+        setLocationRelativeTo(null);
+
+        powrotButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                MainFrame mainFrame = new MainFrame();
+                mainFrame.setVisible(true);
+            }
+        });
+
+        inwentarzButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                InwentarzFrame inwentarzFrame = new InwentarzFrame();
+                inwentarzFrame.setVisible(true);
+            }
+        });
+
+        wylaczButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+            }
+        });
+
+        transakcjeButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                TransakcjeFrame transakcjeFrame = new TransakcjeFrame();
+                transakcjeFrame.setVisible(true);
+            }
+        });
+
+        finanseButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                FinanseFrame finanseFrame = new FinanseFrame(AdminFrame.this);
+                finanseFrame.setVisible(true);
+            }
+        });
+    }
+}
+
+----FinanseFrame.java----
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class FinanseFrame extends JFrame {
+    private JPanel rootPanel;
+    private JButton powrotButton;
+    private JButton wyciagnijZyskButton;
+    private JPanel panelGlowny;
+    private JPanel panelDolny;
+    private JLabel informacjeLabel;
+    private JLabel zyskCalkowityLabel;
+    private JLabel zyskDoWyplatyLabel;
+    private JLabel kwotaCalkowitaLabel;
+    private JLabel kwotaDoWyplatyLabel;
+
+    private AdminFrame adminFrame;
+
+    public FinanseFrame(AdminFrame adminFrame) {
+        super("Finanse");
+        this.adminFrame = adminFrame;
+
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setContentPane(rootPanel);
+        setSize(400, 300);
+        setLocationRelativeTo(null);
+
+        aktualizujDaneFinansowe();
+
+        powrotButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                adminFrame.setVisible(true);
+            }
+        });
+
+        wyciagnijZyskButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                double kwotaDoWyplaty = KalkulatorFinansow.pobierzZyskDoWyplaty();
+
+                if (kwotaDoWyplaty <= 0) {
+                    JOptionPane.showMessageDialog(null, "Brak środków do wypłaty.");
+                    return;
+                }
+
+                int decyzja = JOptionPane.showConfirmDialog(null,
+                        "Czy na pewno chcesz wypłacić " + kwotaDoWyplaty + " zł?",
+                        "Potwierdzenie wypłaty",
+                        JOptionPane.YES_NO_OPTION);
+
+                if (decyzja == JOptionPane.YES_OPTION) {
+                    KalkulatorFinansow.zapiszWyplate(kwotaDoWyplaty);
+                    JOptionPane.showMessageDialog(null, "Zysk został pomyślnie wypłacony!");
+                    aktualizujDaneFinansowe();
+                }
+            }
+        });
+    }
+
+    private void aktualizujDaneFinansowe() {
+        double zyskCalkowity = KalkulatorFinansow.pobierzZyskCalkowity();
+        double zyskDoWyplaty = KalkulatorFinansow.pobierzZyskDoWyplaty();
+
+        kwotaCalkowitaLabel.setText(zyskCalkowity + " zł");
+        kwotaDoWyplatyLabel.setText(zyskDoWyplaty + " zł");
+    }
+}
+
+----MainFrame.java----
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.List;
+
+public class MainFrame extends JFrame {
+
+    private JPanel rootPanel;
+    private JLabel statusLabel;
+    private JPanel panelDolny;
+    private JButton adminButton;
+    private JPanel panelPrawy;
+    private JPanel panelGlowny;
+    private JPanel panelProdukty;
+    private JPanel panelDetali;
+    private JLabel labelZdjecie;
+    private JTextArea textOpis;
+    private JButton koszykButton;
+    private JButton zaplacButton;
+    private JButton dodajDoKoszykaButton;
+    private JLabel cenaLabel;
+    private JLabel kosztLabel;
+    private JLabel liczbaProduktowLabel;
+
+    private List<Produkt> koszyk;
+    private double kosztCalkowity;
+    private List<Produkt> dostepneProdukty;
+
+    public MainFrame() {
+        this.koszyk = new ArrayList<Produkt>();
+        this.kosztCalkowity = 0;
+
+        this.setContentPane(rootPanel);
+        this.setTitle("Automat z Napojami");
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        labelZdjecie.setHorizontalAlignment(SwingConstants.CENTER);
+        labelZdjecie.setVerticalAlignment(SwingConstants.CENTER);
+
+        stworzPrzyciskiProduktow();
+        aktualizujEtykiety();
+
+        panelPrawy.setPreferredSize(new Dimension(170, 0));
+        panelDetali.setPreferredSize(new Dimension(250, 0));
+
+        this.pack();
+        this.setMinimumSize(new Dimension(this.getWidth(), 600));
+        this.setLocationRelativeTo(null);
+
+        dodajDoKoszykaButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dodajDoKoszyka();
+            }
+        });
+
+        koszykButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                setVisible(false);
+                KoszykFrame koszykFrame = new KoszykFrame(koszyk, MainFrame.this);
+                koszykFrame.setVisible(true);
+            }
+        });
+
+        zaplacButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (kosztCalkowity == 0) {
+                    JOptionPane.showMessageDialog(null, "Koszyk jest pusty! Dodaj coś, aby zapłacić.");
+                } else {
+                    setVisible(false);
+                    ZaplacFrame zaplacFrame = new ZaplacFrame(MainFrame.this, kosztCalkowity);
+                    zaplacFrame.setVisible(true);
+                }
+            }
+        });
+
+        adminButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                AdminLoginFrame adminLoginFrame = new AdminLoginFrame(MainFrame.this);
+                adminLoginFrame.setVisible(true);
+                setVisible(false);
+            }
+        });
+
+        adminButton.setVisible(false);
+        KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+        manager.addKeyEventDispatcher(new KeyEventDispatcher() {
+            public boolean dispatchKeyEvent(KeyEvent e) {
+                if (e.getID() == KeyEvent.KEY_PRESSED && e.getKeyCode() == KeyEvent.VK_SHIFT) {
+                    adminButton.setVisible(true);
+                } else if (e.getID() == KeyEvent.KEY_RELEASED && e.getKeyCode() == KeyEvent.VK_SHIFT) {
+                    adminButton.setVisible(false);
+                }
+                return false;
+            }
+        });
+    }
+
+    private void wyswietlIkoneTypuProduktu(Produkt produkt) {
+        String nazwaPlikuIkony;
+
+        if (produkt instanceof NapojGazowany) {
+            nazwaPlikuIkony = "gazowany.png";
+        } else if (produkt instanceof Sok) {
+            nazwaPlikuIkony = "sok.png";
+        } else if (produkt instanceof Woda) {
+            nazwaPlikuIkony = "woda.png";
+        } else {
+            nazwaPlikuIkony = "domyslny.png";
+        }
+
+        String sciezkaDoPliku = "icons/" + nazwaPlikuIkony;
+        ImageIcon icon = new ImageIcon(sciezkaDoPliku);
+
+        if (icon.getImageLoadStatus() == MediaTracker.COMPLETE) {
+            labelZdjecie.setIcon(icon);
+            labelZdjecie.setText("");
+        } else {
+            System.err.println("Nie znaleziono ikony typu: " + sciezkaDoPliku);
+            labelZdjecie.setIcon(null);
+            labelZdjecie.setText("<html><center>Brak<br>ikony</center></html>");
+        }
+    }
+
+    private void stworzPrzyciskiProduktow() {
+        panelProdukty.removeAll();
+        panelProdukty.setLayout(new GridLayout(0, 3, 10, 10));
+
+        this.dostepneProdukty = BazaDanych.pobierzWszystkieProdukty();
+
+        if (dostepneProdukty.isEmpty()) {
+            panelProdukty.add(new JLabel("Błąd bazy danych lub brak produktów."));
+        }
+
+        for (int i = 0; i < dostepneProdukty.size(); i++) {
+            final Produkt finalnyProdukt = dostepneProdukty.get(i);
+            JButton productButton = new JButton();
+            productButton.setFont(new Font("Arial", Font.BOLD, 16));
+            productButton.setFocusable(false);
+
+            if (finalnyProdukt.getIlosc() > 0) {
+                productButton.setText("<html><center>" + finalnyProdukt.getNazwa() + "<br>" + finalnyProdukt.getCena() + " zł</center></html>");
+                productButton.setEnabled(true);
+            } else {
+                productButton.setText("<html><center>" + finalnyProdukt.getNazwa() + "<br><b>BRAK</b></center></html>");
+                productButton.setEnabled(false);
+            }
+
+            productButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    statusLabel.setText("Wybrano: " + finalnyProdukt.getNazwa());
+                    wyswietlIkoneTypuProduktu(finalnyProdukt);
+                    textOpis.setText(finalnyProdukt.getSzczegolowyOpis());
+                    cenaLabel.setText("Cena: " + finalnyProdukt.getCena() + " zł");
+                }
+            });
+            panelProdukty.add(productButton);
+        }
+        panelProdukty.revalidate();
+        panelProdukty.repaint();
+    }
+
+    private void dodajDoKoszyka() {
+        String wybranaNazwa = statusLabel.getText().replace("Wybrano: ", "");
+        if (wybranaNazwa.isEmpty() || !statusLabel.getText().startsWith("Wybrano:")) {
+            JOptionPane.showMessageDialog(this, "Najpierw wybierz produkt!");
+            return;
+        }
+        Produkt wybranyProdukt = null;
+        for (int i = 0; i < this.dostepneProdukty.size(); i++) {
+            if (this.dostepneProdukty.get(i).getNazwa().equals(wybranaNazwa)) {
+                wybranyProdukt = this.dostepneProdukty.get(i);
+                break;
+            }
+        }
+        if (wybranyProdukt != null) {
+            int iloscNaStanie = wybranyProdukt.getIlosc();
+            int iloscWKoszyku = 0;
+            for (int i = 0; i < koszyk.size(); i++) {
+                if (koszyk.get(i).getId() == wybranyProdukt.getId()) {
+                    iloscWKoszyku++;
+                }
+            }
+            if (iloscWKoszyku < iloscNaStanie) {
+                koszyk.add(wybranyProdukt);
+                aktualizujEtykiety();
+                JOptionPane.showMessageDialog(this, "Dodano do koszyka: " + wybranyProdukt.getNazwa());
+            } else {
+                JOptionPane.showMessageDialog(this, "Osiągnięto maksymalną dostępną ilość tego produktu!", "Brak produktu", JOptionPane.WARNING_MESSAGE);
+            }
+        }
+    }
+
+    public void aktualizujEtykiety() {
+        kosztCalkowity = 0;
+        for (int i = 0; i < koszyk.size(); i++) {
+            kosztCalkowity = kosztCalkowity + koszyk.get(i).getCena();
+        }
+        liczbaProduktowLabel.setText("Liczba produktów: " + koszyk.size());
+        kosztLabel.setText("Koszt: " + kosztCalkowity + " zł");
+    }
+
+    public void resetujKoszyk() {
+        koszyk.clear();
+        aktualizujEtykiety();
+    }
+
+    public void finalizujTransakcje() {
+        if (koszyk.isEmpty()) {
+            return;
+        }
+        boolean aktualizacjaUdana = BazaDanych.zaktualizujIloscProduktow(koszyk);
+        if (aktualizacjaUdana) {
+            JOptionPane.showMessageDialog(this, "Dziękujemy za zakup!", "Transakcja udana", JOptionPane.INFORMATION_MESSAGE);
+            resetujKoszyk();
+        } else {
+            JOptionPane.showMessageDialog(this, "Wystąpił błąd podczas przetwarzania transakcji.", "Błąd transakcji", JOptionPane.ERROR_MESSAGE);
+        }
+        stworzPrzyciskiProduktow();
+    }
+
+    public List<Produkt> getKoszyk() {
+        return this.koszyk;
+    }
+
+    public static void main(String[] args) {
+        MainFrame frame = new MainFrame();
+        frame.setVisible(true);
+    }
+}
+
+----AdminLoginFrame.java----
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class AdminLoginFrame extends JFrame {
+    private JPanel rootPanel;
+    private JButton anulujButton;
+    private JTextField nazwaField;
+    private JPasswordField hasloField;
+    private JButton dalejButton;
+    private MainFrame mainFrame;
+
+    public AdminLoginFrame(MainFrame mainFrame) {
+        setTitle("Admin Login");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setContentPane(rootPanel);
+        setSize(450, 200);
+        setLocationRelativeTo(null);
+        this.mainFrame = mainFrame;
+
+        dalejButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String nazwa = nazwaField.getText();
+                String haslo = new String(hasloField.getPassword());
+
+                if(nazwa.equals("admin") && haslo.equals("admin")){
+                    AdminFrame adminFrame = new AdminFrame();
+                    dispose();
+                    adminFrame.setVisible(true);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Nieprawidłowe dane.", "Błąd", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        anulujButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                mainFrame.setVisible(true);
+            }
+        });
+    }
+}
+
+----Main.java----
+public class Main {
+    public static void main(String[] args) {
+        MainFrame mainFrame = new MainFrame();
+        mainFrame.setVisible(true);
+    }
+}
+
+----Produkt.java----
+public abstract class Produkt {
+
+    protected int id;
+    protected String nazwa;
+    protected double cena;
+    protected int ilosc;
+
+    public Produkt(int id, String nazwa, double cena, int ilosc) {
+        this.id = id;
+        this.nazwa = nazwa;
+        this.cena = cena;
+        this.ilosc = ilosc;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getNazwa() {
+        return nazwa;
+    }
+
+    public double getCena() {
+        return cena;
+    }
+
+    public int getIlosc() {
+        return ilosc;
+    }
+
+    public abstract String getSzczegolowyOpis();
+}
+
+----BazaDanych.java----
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+
+public class BazaDanych {
+
+    private static final String DB_URL = "jdbc:sqlite:automat.db";
+
+    public static List<Produkt> pobierzWszystkieProdukty() {
+        List<Produkt> produkty = new ArrayList<Produkt>();
+        String sql = "SELECT p.id, p.nazwa, p.cena, p.typ_produktu, p.ilosc, " +
+                "dn.pojemnosc_ml, ds.czy_slodzony, ds.rodzaj_owocu " +
+                "FROM produkty p " +
+                "LEFT JOIN detale_napoje dn ON p.id = dn.id_produktu " +
+                "LEFT JOIN detale_specyficzne ds ON p.id = ds.id_produktu";
+
+        try {
+            Connection conn = DriverManager.getConnection(DB_URL);
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String nazwa = rs.getString("nazwa");
+                double cena = rs.getDouble("cena");
+                String typProduktu = rs.getString("typ_produktu");
+                int pojemnoscMl = rs.getInt("pojemnosc_ml");
+                int ilosc = rs.getInt("ilosc");
+
+                if (typProduktu.equals("GAZOWANY")) {
+                    boolean czySlodzony = rs.getBoolean("czy_slodzony");
+                    produkty.add(new NapojGazowany(id, nazwa, cena, ilosc, pojemnoscMl, czySlodzony));
+                } else if (typProduktu.equals("SOK")) {
+                    String rodzajOwocu = rs.getString("rodzaj_owocu");
+                    produkty.add(new Sok(id, nazwa, cena, ilosc, pojemnoscMl, rodzajOwocu));
+                } else if (typProduktu.equals("WODA")) {
+                    produkty.add(new Woda(id, nazwa, cena, ilosc, pojemnoscMl));
+                } else {
+                    System.err.println("Nieznany typ produktu w bazie: " + typProduktu);
+                }
+            }
+
+            rs.close();
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return produkty;
+    }
+
+    public static boolean zaktualizujIloscProduktow(List<Produkt> zakupioneProdukty) {
+        Map<Integer, Integer> iloscDoOdjecia = new HashMap<Integer, Integer>();
+
+        for (int i = 0; i < zakupioneProdukty.size(); i++) {
+            Produkt p = zakupioneProdukty.get(i);
+            int id = p.getId();
+            if (iloscDoOdjecia.containsKey(id)) {
+                iloscDoOdjecia.put(id, iloscDoOdjecia.get(id) + 1);
+            } else {
+                iloscDoOdjecia.put(id, 1);
+            }
+        }
+
+        String sql = "UPDATE produkty SET ilosc = ilosc - ? WHERE id = ?";
+
+        try {
+            Connection conn = DriverManager.getConnection(DB_URL);
+            conn.setAutoCommit(false);
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+
+            for (Map.Entry<Integer, Integer> wpis : iloscDoOdjecia.entrySet()) {
+                pstmt.setInt(1, wpis.getValue());
+                pstmt.setInt(2, wpis.getKey());
+                pstmt.addBatch();
+            }
+
+            pstmt.executeBatch();
+            conn.commit();
+
+            pstmt.close();
+            conn.close();
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.err.println("Błąd podczas aktualizacji ilości produktów w bazie: " + e.getMessage());
+            return false;
+        }
+    }
+}
+
+----EdytujFrame.java----
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.*;
+
+public class EdytujFrame extends JFrame {
+    private JPanel rootPanel;
+    private JLabel nazwaLabel;
+    private JLabel typLabel;
+    private JTextField cenaTextField;
+    private JTextField iloscTextField;
+    private JButton zapiszButton;
+    private JButton anulujButton;
+
+    private int produktId;
+
+    public EdytujFrame(int id, String nazwa, String typ, double cena, int ilosc) {
+        super("Edytuj Produkt");
+        this.produktId = id;
+
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setContentPane(rootPanel);
+        setLocationRelativeTo(null);
+        setSize(400, 300);
+
+        nazwaLabel.setText(nazwa);
+        typLabel.setText(typ);
+        cenaTextField.setText(String.valueOf(cena));
+        iloscTextField.setText(String.valueOf(ilosc));
+
+        anulujButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                InwentarzFrame inwentarzFrame = new InwentarzFrame();
+                inwentarzFrame.setVisible(true);
+            }
+        });
+
+        zapiszButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                double updatedCena = Double.parseDouble(cenaTextField.getText());
+                int updatedIlosc = Integer.parseInt(iloscTextField.getText());
+
+                if (aktualizujProduktWBazie(produktId, updatedCena, updatedIlosc)) {
+                    JOptionPane.showMessageDialog(null, "Produkt został zaktualizowany");
+                    dispose();
+                    InwentarzFrame inwentarzFrame = new InwentarzFrame();
+                    inwentarzFrame.setVisible(true);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Błąd podczas aktualizacji produktu");
+                }
+            }
+        });
+    }
+
+    private boolean aktualizujProduktWBazie(int id, double cena, int ilosc) {
+        String dbUrl = "jdbc:sqlite:automat.db";
+        String sql = "UPDATE produkty SET cena = ?, ilosc = ? WHERE id = ?";
+
+        try {
+            Connection conn = DriverManager.getConnection(dbUrl);
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+
+            pstmt.setDouble(1, cena);
+            pstmt.setInt(2, ilosc);
+            pstmt.setInt(3, id);
+            pstmt.executeUpdate();
+
+            pstmt.close();
+            conn.close();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static void main(String[] args) {
+        EdytujFrame frame = new EdytujFrame(1, "Przykład", "GAZOWANY", 10.0, 10);
+        frame.setVisible(true);
+    }
+}
+
