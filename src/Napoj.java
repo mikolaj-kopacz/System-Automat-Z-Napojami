@@ -4,7 +4,7 @@ public abstract class Napoj extends Produkt {
     protected int pojemnoscMl;
 
     public Napoj(int id, String nazwa, BigDecimal cena, int pojemnoscMl) {
-        super(id, nazwa, cena); // Wywołanie konstruktora klasy nadrzędnej (Produkt)
+        super(id, nazwa, cena);
         this.pojemnoscMl = pojemnoscMl;
     }
 

@@ -82,7 +82,8 @@ public class DodajFrame extends JFrame {
 
     private boolean dodajProduktDoBazy(String nazwa, BigDecimal cena, String typ, int ilosc, int rozmiar) {
         if (czyProduktIstnieje(nazwa, cena, rozmiar)) {
-            return false; // Produkt istnieje
+            return false;
+
         }
 
         String dbUrl = "jdbc:sqlite:automat.db";
@@ -93,7 +94,7 @@ public class DodajFrame extends JFrame {
              PreparedStatement pstmtProdukty = conn.prepareStatement(sqlProdukty);
              PreparedStatement pstmtDetale = conn.prepareStatement(sqlDetaleNapoje)) {
 
-            conn.setAutoCommit(false); // Rozpocznij transakcję
+            conn.setAutoCommit(false);
 
             pstmtProdukty.setString(1, nazwa);
             pstmtProdukty.setBigDecimal(2, cena);
@@ -104,12 +105,12 @@ public class DodajFrame extends JFrame {
             pstmtDetale.setInt(1, rozmiar);
             pstmtDetale.executeUpdate();
 
-            conn.commit(); // Zatwierdź transakcję
+            conn.commit();
             return true;
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return false; // Błąd SQL
+            return false;
         }
     }
 

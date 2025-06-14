@@ -1,0 +1,151 @@
+\documentclass{urdpl}
+
+\usepackage[english,polish]{babel}
+\usepackage{polski}
+\usepackage[utf8]{inputenc}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage[hidelinks]{hyperref}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{multirow} 
+\usepackage{tabularx} 
+\usepackage{amssymb} 
+\usepackage{xcolor}
+\usepackage{array}
+\usepackage{afterpackage}
+\usepackage{makecell}
+\usepackage[flushleft]{threeparttable}
+\usepackage[normalem]{ulem}
+\usepackage{lineno}
+\usepackage{indentfirst}
+\usepackage{titlesec}
+\usepackage{siunitx}
+\usepackage{courier}
+
+
+
+
+
+\lstloadlanguages{Java}
+\renewcommand{\lstlistlistingname}{Spis listingów}
+\renewcommand{\lstlistingname}{Listing}
+
+\lstset{
+    literate={ą}{{\k{a}}}1 {ć}{{\'c}}1 {ę}{{\'e}}1 {ó}{{\'o}}1 
+             {ń}{{\'n}}1 {ł}{{\l{}}}1 {ś}{{\'s}}1 {ź}{{\'z}}1 
+             {ż}{{\.z}}1 {Ą}{{\k{A}}}1 {Ć}{{\'C}}1 {Ę}{{\'E}}1 
+             {Ó}{{\'O}}1 {Ń}{{\'N}}1 {Ł}{{\L{}}}1 {Ś}{{\'S}}1 
+             {Ź}{{\'Z}}1 {Ż}{{\.Z}}1,
+    basicstyle=\footnotesize\ttfamily,
+}
+
+\lstdefinestyle{javaStyle}{
+    language=Java,
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!50!black}\itshape,
+    stringstyle=\color{red},
+    numberstyle=\tiny\color{gray},
+    numbers=left,
+    numbersep=5pt,                      
+    stepnumber=1,
+    showspaces=false,                  
+    tabsize=2,
+    showstringspaces=false,
+    breaklines=true,
+    breakatwhitespace=false,        
+    showtabs=false,                    
+    keepspaces=true                 
+}
+
+
+\author{Mikołaj Kopacz}
+\shortauthor{M. Kopacz}
+\noAlbum{134926}
+
+\titlePL{Projekt i implementacja systemu automatu z napojami z wykorzystaniem języka Java i bazy danych SQLite}
+\titleEN{Design and implementation of a beverage vending machine system using Java and SQLite database}
+
+\shorttitlePL{System automatu z napojami w Javie} 
+\shorttitleEN{Beverage Vending System in Java}
+
+\thesistype{Praca projektowa}
+\thesisDone{Praca wykonana pod kierunkiem}
+\supervisor{mgr inż. Ewa Żesławska}
+
+\degreeprogramme{Informatyka}
+\date{2025}
+\department{Instytut Informatyki}
+\faculty{Wydział Nauk Ścisłych i Technicznych}
+
+
+
+\makeatletter
+\renewcommand{\listoffigures}{%
+    \chapter*{\listfigurename}%
+    \@starttoc{lof}%
+    \thispagestyle{empty}%
+}
+
+
+\renewcommand{\lstlistoflistings}{%
+    \chapter*{\lstlistlistingname}%
+    \@starttoc{lol}%
+    \thispagestyle{empty}%
+}
+\makeatother
+
+
+\usepackage[figure,table,lstlisting]{totalcount}
+\begin{document}
+
+
+\titlepages
+
+
+
+
+\tableofcontents
+\clearpage
+
+
+\input{chapters/01_Streszczenie.tex}
+\input{chapters/02_Zalozenia.tex}
+\input{chapters/03_Struktura.tex}
+\input{chapters/04_Harmonogram.tex}
+\input{chapters/05_Warstwa_uzytkowa.tex}
+\input{chapters/06_Testowanie.tex}
+\input{chapters/07_Podsumowanie.tex}
+
+
+
+\clearpage
+\phantomsection
+\addcontentsline{toc}{section}{\textbf{Bibliografia}}
+\bibliographystyle{plain}
+\bibliography{bibliografia.bib}
+
+
+\clearpage
+\phantomsection
+\addcontentsline{toc}{section}{\textbf{Spis rysunków}}
+\listoffigures
+
+
+\clearpage
+\phantomsection
+\addcontentsline{toc}{section}{\textbf{Spis listingów}}
+\lstlistoflistings
+
+
+
+\clearpage
+\phantomsection
+\input{statement-A}
+
+\end{document}

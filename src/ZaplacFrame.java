@@ -25,7 +25,7 @@ public class ZaplacFrame extends JFrame {
         setResizable(false);
 
         kwotaLabel.setText(kwota.toPlainString() + " zł");
-        kwotaLabel.setFont(new Font("Arial", Font.BOLD, 28)); // Powiększamy czcionkę dla lepszej widoczności
+        kwotaLabel.setFont(new Font("Arial", Font.BOLD, 28));
 
         anulujButton.addActionListener(e -> {
             dispose();

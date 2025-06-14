@@ -1,0 +1,21 @@
+\begin{thebibliography}{1}
+
+\bibitem{BigDecimal}
+docs.oracle.com.
+\newblock Bigdecimal documentation.
+\newblock https://docs.oracle.com/javase/8/docs/api/java/math/BigDecimal.html.
+\newblock Dostęp: 2023-10-15.
+
+\bibitem{oracle_java}
+docs.oracle.com.
+\newblock Oracle java documentation.
+\newblock \url{https://docs.oracle.com/en/java/}.
+\newblock Dostęp: 2023-10-15.
+
+\bibitem{sqlite_doc}
+sqlite.org.
+\newblock Sqlite documentation.
+\newblock \url{https://www.sqlite.org/docs.html}.
+\newblock Dostęp: 2023-10-15.
+
+\end{thebibliography}

@@ -1,0 +1,30 @@
+\babel@toc {polish}{}\relax 
+\contentsline {section}{\numberline {0.1}Streszczenie}{6}{section.0.1}%
+\contentsline {subsection}{\numberline {0.1.1}Streszczenie w języku polskim}{6}{subsection.0.1.1}%
+\contentsline {subsection}{\numberline {0.1.2}Summary in English}{6}{subsection.0.1.2}%
+\contentsline {section}{\numberline {0.2}Opis założeń projektu}{6}{section.0.2}%
+\contentsline {subsection}{\numberline {0.2.1}Cel projektu}{6}{subsection.0.2.1}%
+\contentsline {subsection}{\numberline {0.2.2}Wymagania funkcjonalne}{6}{subsection.0.2.2}%
+\contentsline {subsection}{\numberline {0.2.3}Wymagania niefunkcjonalne}{7}{subsection.0.2.3}%
+\contentsline {section}{\numberline {0.3}Opis struktury projektu}{7}{section.0.3}%
+\contentsline {subsection}{\numberline {0.3.1}Architektura systemu}{7}{subsection.0.3.1}%
+\contentsline {subsection}{\numberline {0.3.2}Diagram klas}{8}{subsection.0.3.2}%
+\contentsline {subsection}{\numberline {0.3.3}Baza danych}{9}{subsection.0.3.3}%
+\contentsline {section}{\numberline {0.4}Harmonogram realizacji projektu}{9}{section.0.4}%
+\contentsline {section}{\numberline {0.5}Prezentacja warstwy użytkowej projektu}{10}{section.0.5}%
+\contentsline {subsection}{\numberline {0.5.1}Interfejs użytkownika}{10}{subsection.0.5.1}%
+\contentsline {subsection}{\numberline {0.5.2}Przepływ użytkownika}{10}{subsection.0.5.2}%
+\contentsline {subsection}{\numberline {0.5.3}Panel administratora}{11}{subsection.0.5.3}%
+\contentsline {section}{\numberline {0.6}Testowanie systemu}{11}{section.0.6}%
+\contentsline {subsection}{\numberline {0.6.1}Strategia testowania}{11}{subsection.0.6.1}%
+\contentsline {subsection}{\numberline {0.6.2}Przykładowe scenariusze testowe}{11}{subsection.0.6.2}%
+\contentsline {subsection}{\numberline {0.6.3}Wyniki testów wydajnościowych}{12}{subsection.0.6.3}%
+\contentsline {section}{\numberline {0.7}Podsumowanie}{12}{section.0.7}%
+\contentsline {subsection}{\numberline {0.7.1}Osiągnięte cele}{12}{subsection.0.7.1}%
+\contentsline {subsection}{\numberline {0.7.2}Problemy napotkane podczas realizacji}{12}{subsection.0.7.2}%
+\contentsline {subsection}{\numberline {0.7.3}Kierunki rozwoju}{12}{subsection.0.7.3}%
+\contentsline {subsection}{\numberline {0.7.4}Wnioski}{12}{subsection.0.7.4}%
+\contentsline {section}{\textbf {Bibliografia}}{13}{section*.7}%
+\contentsline {section}{\textbf {Spis rysunków}}{14}{section*.9}%
+\contentsline {section}{\textbf {Spis listingów}}{15}{section*.10}%
+\contentsline {section}{\textbf {Oświadczenie studenta o samodzielności pracy}}{16}{chapter*.13}%

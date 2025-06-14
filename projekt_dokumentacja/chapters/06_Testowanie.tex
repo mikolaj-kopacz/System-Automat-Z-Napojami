@@ -1,0 +1,28 @@
+\section{Testowanie systemu}
+\subsection{Strategia testowania}
+System został przetestowany na trzech poziomach:
+\begin{itemize}
+\item Testy jednostkowe (JUnit) - poszczególne metody
+\item Testy integracyjne - współdziałanie komponentów
+\item Testy systemowe - cała aplikacja
+\end{itemize}
+
+\subsection{Przykładowe scenariusze testowe}
+\begin{table}[H]
+\centering
+\caption{Przykładowe przypadki testowe}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Scenariusz} & \textbf{Oczekiwany wynik} & \textbf{Status} \\ \hline
+Dodanie produktu do koszyka & Koszyk zawiera 1 produkt & PASS \\ \hline
+Płatność niewystarczającą kwotą & Komunikat o błędzie & PASS \\ \hline
+Logowanie admina poprawnymi danymi & Dostęp do panelu & PASS \\ \hline
+\end{tabular}
+\end{table}
+
+\subsection{Wyniki testów wydajnościowych}
+\begin{itemize}
+\item Średni czas ładowania ekranu: 0.3s
+\item Maksymalna liczba równoległych transakcji: 15
+\item Średni czas przetwarzania płatności: 0.5s
+\end{itemize}
