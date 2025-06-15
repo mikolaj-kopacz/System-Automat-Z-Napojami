@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.6.14)  14 JUN 2025 23:58
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.6.14)  15 JUN 2025 10:13
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -719,7 +719,7 @@ LaTeX Font Info:    Trying to load font information for U+msb on input line 108.
  (/usr/local/texlive/2025/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-<figures/ur.jpg, id=120, 134.00063pt x 134.00063pt>
+<figures/ur.jpg, id=124, 134.00063pt x 134.00063pt>
 File: figures/ur.jpg Graphic file (type jpg)
 <use figures/ur.jpg>
 Package pdftex.def Info: figures/ur.jpg  used on input line 108.
@@ -762,10 +762,10 @@ File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
 [6
 
 ]) (./chapters/03_Struktura.tex
-<figures/class_diagram.png, id=183, 1282.7925pt x 1553.805pt>
+<figures/class_diagram.png, id=188, 1282.7925pt x 1553.805pt>
 File: figures/class_diagram.png Graphic file (type png)
 <use figures/class_diagram.png>
-Package pdftex.def Info: figures/class_diagram.png  used on input line 13.
+Package pdftex.def Info: figures/class_diagram.png  used on input line 14.
 (pdftex.def)             Requested size: 384.1096pt x 465.24416pt.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
@@ -773,54 +773,78 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 
 
 [7]
+<figures/inheritance_diagram.png, id=193, 607.26875pt x 393.47pt>
+File: figures/inheritance_diagram.png Graphic file (type png)
+<use figures/inheritance_diagram.png>
+Package pdftex.def Info: figures/inheritance_diagram.png  used on input line 24.
+(pdftex.def)             Requested size: 298.75264pt x 193.57648pt.
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
 
 [8 <./figures/class_diagram.png (PNG copy)>]
-<figures/erd_diagram.png, id=193, 2050.66125pt x 1639.12375pt>
+LaTeX Font Info:    Trying to load font information for T1+pcr on input line 30.
+ (/usr/local/texlive/2025/texmf-dist/tex/latex/psnfss/t1pcr.fd
+File: t1pcr.fd 2001/06/04 font definitions for T1/pcr.
+)
+Underfull \hbox (badness 1286) in paragraph at lines 57--58
+[]\T1/ptm/m/n/10 Specyficzne typy na-po-jów dzie-dzi-cz¡ po kla-sie \T1/pcr/m/n/10 Napoj\T1/ptm/m/n/10 , im-ple-men-tu-j¡c wªa-sne wer-sje me-tody
+ []
+
+
+
+[9 <./figures/inheritance_diagram.png (PNG copy)>]
+LaTeX Font Info:    Font shape `T1/pcr/m/it' in size <8> not available
+(Font)              Font shape `T1/pcr/m/sl' tried instead on input line 89.
+<figures/erd_diagram.png, id=234, 2050.66125pt x 1639.12375pt>
 File: figures/erd_diagram.png Graphic file (type png)
 <use figures/erd_diagram.png>
-Package pdftex.def Info: figures/erd_diagram.png  used on input line 41.
+Package pdftex.def Info: figures/erd_diagram.png  used on input line 126.
 (pdftex.def)             Requested size: 341.43437pt x 272.89482pt.
 ) (./chapters/04_Harmonogram.tex
-<figures/gantt_chart.png, id=195, 1369.115pt x 265.99374pt>
+
+[10]
+<figures/gantt_chart.png, id=259, 1369.115pt x 265.99374pt>
 File: figures/gantt_chart.png Graphic file (type png)
 <use figures/gantt_chart.png>
 Package pdftex.def Info: figures/gantt_chart.png  used on input line 6.
 (pdftex.def)             Requested size: 426.79135pt x 82.91583pt.
+) (./chapters/05_Warstwa_uzytkowa.tex
 
-
-[9 <./figures/erd_diagram.png> <./figures/gantt_chart.png>]) (./chapters/05_Warstwa_uzytkowa.tex
-<figures/main_screen.png, id=206, 1032.85875pt x 568.1225pt>
+[11 <./figures/erd_diagram.png> <./figures/gantt_chart.png>]
+<figures/main_screen.png, id=270, 1032.85875pt x 568.1225pt>
 File: figures/main_screen.png Graphic file (type png)
 <use figures/main_screen.png>
 Package pdftex.def Info: figures/main_screen.png  used on input line 12.
 (pdftex.def)             Requested size: 192.0548pt x 105.63847pt.
-<figures/payment_screen.png, id=207, 409.53pt x 299.1175pt>
+<figures/payment_screen.png, id=271, 409.53pt x 299.1175pt>
 File: figures/payment_screen.png Graphic file (type png)
 <use figures/payment_screen.png>
 Package pdftex.def Info: figures/payment_screen.png  used on input line 17.
 (pdftex.def)             Requested size: 192.0548pt x 140.27943pt.
-<figures/admin_panel.png, id=208, 405.515pt x 311.1625pt>
+<figures/admin_panel.png, id=272, 405.515pt x 311.1625pt>
 File: figures/admin_panel.png Graphic file (type png)
 <use figures/admin_panel.png>
 Package pdftex.def Info: figures/admin_panel.png  used on input line 38.
 (pdftex.def)             Requested size: 298.75264pt x 229.24533pt.
 
-Underfull \vbox (badness 2119) has occurred while \output is active []
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
 
 
-[10 <./figures/main_screen.png> <./figures/payment_screen.png>]) (./chapters/06_Testowanie.tex
+[12 <./figures/main_screen.png> <./figures/payment_screen.png>]) (./chapters/06_Testowanie.tex
 
-[11 <./figures/admin_panel.png>]) (./chapters/07_Podsumowanie.tex)
+[13 <./figures/admin_panel.png>]) (./chapters/07_Podsumowanie.tex)
 
-[12] (./praca.bbl
+[14] (./praca.bbl
 Overfull \hbox (52.09232pt too wide) in paragraph at lines 4--8
 []\T1/ptm/m/n/10 docs.oracle.com.  Big-de-ci-mal do-cu-men-ta-tion.  https://docs.oracle.com/javase/8/docs/api/java/math/BigDecimal.html.
  []
 
 )
 
-[13
+[15
 
 
 ] (./praca.lof)
@@ -829,7 +853,7 @@ Overfull \hbox (52.09232pt too wide) in paragraph at lines 4--8
 
 
 
-[14
+[16
 
 ] (./praca.lol)
 \tf@lol=\write6
@@ -837,7 +861,7 @@ Overfull \hbox (52.09232pt too wide) in paragraph at lines 4--8
 
 
 
-[15
+[17
 
 
 ] (./statement-A.tex
@@ -857,7 +881,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 25--27
 
 )
 
-[16
+[18
 
 
 ] (./praca.aux)
@@ -866,21 +890,21 @@ LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
  ***********
 Package rerunfilecheck Info: File `praca.out' has not changed.
-(rerunfilecheck)             Checksum: 4430044F46873ABA8DC7DE7A1ADBADB9;4797.
+(rerunfilecheck)             Checksum: 894854D6A3025356FDF7D2AB2F65513E;4984.
  ) 
 Here is how much of TeX's memory you used:
- 22508 strings out of 473190
- 427304 string characters out of 5715800
- 970207 words of memory out of 5000000
- 45340 multiletter control sequences out of 15000+600000
- 620543 words of font info for 86 fonts, out of 8000000 for 9000
+ 22943 strings out of 473190
+ 431848 string characters out of 5715800
+ 1097207 words of memory out of 5000000
+ 45716 multiletter control sequences out of 15000+600000
+ 625244 words of font info for 94 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 88i,12n,94p,848b,1161s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/local/texlive/2025/texmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/urw/helvetic/uhvro8a.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on praca.pdf (14 pages, 514724 bytes).
+ 88i,12n,94p,848b,1326s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/local/texlive/2025/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/urw/courier/ucrro8a.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/urw/helvetic/uhvro8a.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on praca.pdf (16 pages, 567694 bytes).
 PDF statistics:
- 315 PDF objects out of 1000 (max. 8388607)
- 270 compressed objects within 3 object streams
- 66 named destinations out of 1000 (max. 500000)
- 268 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 399 PDF objects out of 1000 (max. 8388607)
+ 346 compressed objects within 4 object streams
+ 116 named destinations out of 1000 (max. 500000)
+ 281 words of extra memory for PDF output out of 10000 (max. 10000000)
 

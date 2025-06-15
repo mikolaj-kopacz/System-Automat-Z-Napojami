@@ -9,22 +9,27 @@
 \contentsline {section}{\numberline {0.3}Opis struktury projektu}{7}{section.0.3}%
 \contentsline {subsection}{\numberline {0.3.1}Architektura systemu}{7}{subsection.0.3.1}%
 \contentsline {subsection}{\numberline {0.3.2}Diagram klas}{8}{subsection.0.3.2}%
-\contentsline {subsection}{\numberline {0.3.3}Baza danych}{9}{subsection.0.3.3}%
-\contentsline {section}{\numberline {0.4}Harmonogram realizacji projektu}{9}{section.0.4}%
-\contentsline {section}{\numberline {0.5}Prezentacja warstwy użytkowej projektu}{10}{section.0.5}%
-\contentsline {subsection}{\numberline {0.5.1}Interfejs użytkownika}{10}{subsection.0.5.1}%
-\contentsline {subsection}{\numberline {0.5.2}Przepływ użytkownika}{10}{subsection.0.5.2}%
-\contentsline {subsection}{\numberline {0.5.3}Panel administratora}{11}{subsection.0.5.3}%
-\contentsline {section}{\numberline {0.6}Testowanie systemu}{11}{section.0.6}%
-\contentsline {subsection}{\numberline {0.6.1}Strategia testowania}{11}{subsection.0.6.1}%
-\contentsline {subsection}{\numberline {0.6.2}Przykładowe scenariusze testowe}{11}{subsection.0.6.2}%
-\contentsline {subsection}{\numberline {0.6.3}Wyniki testów wydajnościowych}{12}{subsection.0.6.3}%
-\contentsline {section}{\numberline {0.7}Podsumowanie}{12}{section.0.7}%
-\contentsline {subsection}{\numberline {0.7.1}Osiągnięte cele}{12}{subsection.0.7.1}%
-\contentsline {subsection}{\numberline {0.7.2}Problemy napotkane podczas realizacji}{12}{subsection.0.7.2}%
-\contentsline {subsection}{\numberline {0.7.3}Kierunki rozwoju}{12}{subsection.0.7.3}%
-\contentsline {subsection}{\numberline {0.7.4}Wnioski}{12}{subsection.0.7.4}%
-\contentsline {section}{\textbf {Bibliografia}}{13}{section*.7}%
-\contentsline {section}{\textbf {Spis rysunków}}{14}{section*.9}%
-\contentsline {section}{\textbf {Spis listingów}}{15}{section*.10}%
-\contentsline {section}{\textbf {Oświadczenie studenta o samodzielności pracy}}{16}{chapter*.13}%
+\contentsline {subsection}{\numberline {0.3.3}Hierarchia dziedziczenia}{8}{subsection.0.3.3}%
+\contentsline {subsubsection}{Klasa bazowa Produkt}{9}{subsubsection*.3}%
+\contentsline {subsubsection}{Klasa Napoj}{9}{subsubsection*.4}%
+\contentsline {subsubsection}{Klasy konkretne}{9}{subsubsection*.5}%
+\contentsline {subsubsection}{Zalety zastosowanego podejścia}{10}{subsubsection*.6}%
+\contentsline {subsection}{\numberline {0.3.4}Baza danych}{10}{subsection.0.3.4}%
+\contentsline {section}{\numberline {0.4}Harmonogram realizacji projektu}{11}{section.0.4}%
+\contentsline {section}{\numberline {0.5}Prezentacja warstwy użytkowej projektu}{12}{section.0.5}%
+\contentsline {subsection}{\numberline {0.5.1}Interfejs użytkownika}{12}{subsection.0.5.1}%
+\contentsline {subsection}{\numberline {0.5.2}Przepływ użytkownika}{12}{subsection.0.5.2}%
+\contentsline {subsection}{\numberline {0.5.3}Panel administratora}{13}{subsection.0.5.3}%
+\contentsline {section}{\numberline {0.6}Testowanie systemu}{13}{section.0.6}%
+\contentsline {subsection}{\numberline {0.6.1}Strategia testowania}{13}{subsection.0.6.1}%
+\contentsline {subsection}{\numberline {0.6.2}Przykładowe scenariusze testowe}{13}{subsection.0.6.2}%
+\contentsline {subsection}{\numberline {0.6.3}Wyniki testów wydajnościowych}{14}{subsection.0.6.3}%
+\contentsline {section}{\numberline {0.7}Podsumowanie}{14}{section.0.7}%
+\contentsline {subsection}{\numberline {0.7.1}Osiągnięte cele}{14}{subsection.0.7.1}%
+\contentsline {subsection}{\numberline {0.7.2}Problemy napotkane podczas realizacji}{14}{subsection.0.7.2}%
+\contentsline {subsection}{\numberline {0.7.3}Kierunki rozwoju}{14}{subsection.0.7.3}%
+\contentsline {subsection}{\numberline {0.7.4}Wnioski}{14}{subsection.0.7.4}%
+\contentsline {section}{\textbf {Bibliografia}}{15}{section*.12}%
+\contentsline {section}{\textbf {Spis rysunków}}{16}{section*.14}%
+\contentsline {section}{\textbf {Spis listingów}}{17}{section*.15}%
+\contentsline {section}{\textbf {Oświadczenie studenta o samodzielności pracy}}{18}{chapter*.18}%
